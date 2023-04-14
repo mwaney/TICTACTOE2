@@ -7,7 +7,7 @@ const App = {
     squares: document.querySelectorAll('[data-id="square"]'),
   },
   state: {
-    currentPlayer: 1,
+    moves: [],
   },
   init() {
     App.registerEventListeners();
@@ -25,11 +25,25 @@ const App = {
     App.$.newRoundBtn.addEventListener("click", (event) => {
       console.log("New Round");
     });
+
     App.$.squares.forEach((square) => {
       square.addEventListener("click", (event) => {
-        if (square.hasChildNodes()) return;
+        // check if there exists an X or O if so don't do anything
+        const hasMove = (squareId) => {
+          const existingMove = App.state.moves.find(
+            (move) => move.squareId === squareId
+          );
+          return existingMove !== undefined;
+        };
+        if (hasMove(+square.id)) return;
 
-        const currentPlayer = App.state.currentPlayer;
+        // Determine which icon to place in the square
+        const lastMove = App.state.moves.at(-1);
+        const getOppositePlayer = (playerId) => (playerId === 1 ? 2 : 1);
+        const currentPlayer =
+          App.state.moves.length === 0
+            ? 1
+            : getOppositePlayer(lastMove.playerId);
         const icon = document.createElement("i");
 
         if (currentPlayer == 1) {
@@ -38,8 +52,25 @@ const App = {
           icon.classList.add("fa-solid", "fa-o", "turquoise");
         }
 
-        App.state.currentPlayer = App.state.currentPlayer == 1 ? 2 : 1;
+        App.state.moves.push({
+          squareId: +square.id,
+          playerId: currentPlayer,
+        });
+        console.log(App.state);
+
         square.replaceChildren(icon);
+
+        // Check if  there is a winner or tie game
+        const winningPatterns = [
+          [1, 2, 3],
+          [1, 5, 9],
+          [1, 4, 7],
+          [2, 5, 8],
+          [3, 5, 7],
+          [3, 6, 9],
+          [4, 5, 6],
+          [7, 8, 9],
+        ];
       });
     });
   },
