@@ -8,6 +8,7 @@ const App = {
     modal: document.querySelector('[data-id="modal"]'),
     modalText: document.querySelector('[data-id="modal-text"]'),
     modalBtn: document.querySelector('[data-id="modal-btn"]'),
+    turn: document.querySelector('[data-id="turn"]'),
   },
   state: {
     moves: [],
@@ -85,13 +86,25 @@ const App = {
           App.state.moves.length === 0
             ? 1
             : getOppositePlayer(lastMove.playerId);
+
+        const nextPlayer = getOppositePlayer(currentPlayer);
+
         const icon = document.createElement("i");
+        const turnIcon = document.createElement("i");
+        const turnLabel = document.createElement("p");
+        turnLabel.textContent = `Player ${nextPlayer} You are Up!`;
 
         if (currentPlayer == 1) {
           icon.classList.add("fa-solid", "fa-x", "yellow");
+          turnIcon.classList.add("fa-solid", "fa-o", "turquoise");
+          turnLabel.classList = "turquoise";
         } else {
           icon.classList.add("fa-solid", "fa-o", "turquoise");
+          turnIcon.classList.add("fa-solid", "fa-x", "yellow");
+          turnLabel.classList = "yellow";
         }
+
+        App.$.turn.replaceChildren(turnIcon, turnLabel);
 
         App.state.moves.push({
           squareId: +square.id,
