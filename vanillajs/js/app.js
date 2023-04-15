@@ -5,6 +5,9 @@ const App = {
     resetBtn: document.querySelector('[data-id="reset-btn"]'),
     newRoundBtn: document.querySelector('[data-id="new-round-btn"]'),
     squares: document.querySelectorAll('[data-id="square"]'),
+    modal: document.querySelector('[data-id="modal"]'),
+    modalText: document.querySelector('[data-id="modal-text"]'),
+    modalBtn: document.querySelector('[data-id="modal-btn"]'),
   },
   state: {
     moves: [],
@@ -58,6 +61,12 @@ const App = {
       console.log("New Round");
     });
 
+    App.$.modalBtn.addEventListener("click", () => {
+      App.state.moves = [];
+      App.$.squares.forEach((square) => square.replaceChildren());
+      App.$.modal.classList.add("hidden");
+    });
+
     App.$.squares.forEach((square) => {
       square.addEventListener("click", (event) => {
         // check if there exists an X or O if so don't do anything
@@ -94,11 +103,17 @@ const App = {
         // Check if  there is a winner or tie game
         const game = App.getGameStatus(App.state.moves);
         if (game.status == "complete") {
+          App.$.modal.classList.remove("hidden");
+
+          let message = "";
           if (game.winner) {
-            alert(`Player ${game.winner} wins!`);
+            message = `Player ${game.winner} wins`;
+            // App.$;
           } else {
-            alert(`You Tied`);
+            message = "Tie game";
           }
+
+          App.$.modalText.textContent = message;
         }
       });
     });
