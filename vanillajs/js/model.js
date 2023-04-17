@@ -31,6 +31,7 @@ export default class Model {
       ).length,
     };
   }
+
   get game() {
     const state = this.#getState();
 
@@ -90,6 +91,14 @@ export default class Model {
     }
 
     stateClone.currentGameMoves = [];
+    this.#saveState(stateClone);
+  }
+
+  newRound() {
+    this.reset();
+    const stateClone = structuredClone(this.#getState());
+    stateClone.history.allGames.push(...stateClone.history.currentRoundGames);
+    stateClone.history.currentRoundGames = [];
     this.#saveState(stateClone);
   }
   #getState() {

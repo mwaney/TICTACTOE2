@@ -161,8 +161,15 @@ function init() {
   });
 
   view.bindNewRoundEvent((event) => {
-    console.log("New Round Event");
-    console.log(event);
+    model.newRound();
+    view.closeAll();
+    view.clearMoves();
+    view.setTurnIndicator(model.game.currentPlayer);
+    view.updateScoreBoard(
+      model.stats.playerWithStats[0].wins,
+      model.stats.playerWithStats[1].wins,
+      model.stats.ties
+    );
   });
   view.bindPlayerMoveEvent((square) => {
     const existingMove = model.game.moves.find(
