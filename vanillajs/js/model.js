@@ -1,5 +1,9 @@
 const initialValue = {
-  moves: [],
+  currentGameMoves: [],
+  history: {
+    currentRoundGames: [],
+    allGames: [],
+  },
 };
 export default class Model {
   #state = initialValue;
@@ -8,10 +12,29 @@ export default class Model {
     this.players = players;
   }
 
+  get stats() {
+    const state = this.#getState();
+
+    return {
+      playerWithStats: this.players.map((player) => {
+        const wins = state.history.currentRoundGames.filter(
+          (game) => game.status.winner?.id === player.id
+        ).length;
+
+        return {
+          ...player,
+          wins,
+        };
+      }),
+      ties: state.history.currentRoundGames.filter(
+        (game) => game.status.winner === null
+      ).length,
+    };
+  }
   get game() {
     const state = this.#getState();
 
-    const currentPlayer = this.players[state.moves.length % 2];
+    const currentPlayer = this.players[state.currentGameMoves.length % 2];
 
     const winningPatterns = [
       [1, 2, 3],
@@ -27,7 +50,7 @@ export default class Model {
     let winner = null;
 
     for (const player of this.players) {
-      const selectedSquareIds = state.moves
+      const selectedSquareIds = state.currentGameMoves
         .filter((move) => move.player.id === player.id)
         .map((move) => move.squareId);
 
@@ -38,20 +61,18 @@ export default class Model {
       }
     }
     return {
-      moves: state.moves,
+      moves: state.currentGameMoves,
       currentPlayer,
       status: {
-        isComplete: winner !== null || state.moves.length === 9,
+        isComplete: winner !== null || state.currentGameMoves.length === 9,
         winner,
       },
     };
   }
 
   playerMove(squareId) {
-    const state = this.#getState();
-
-    const stateClone = structuredClone(state);
-    stateClone.moves.push({
+    const stateClone = structuredClone(this.#getState());
+    stateClone.currentGameMoves.push({
       squareId,
       player: this.game.currentPlayer,
     });
@@ -59,7 +80,17 @@ export default class Model {
   }
 
   reset() {
-    this.#saveState(initialValue);
+    const stateClone = structuredClone(this.#getState());
+    const { status, moves } = this.game;
+    if (status.isComplete) {
+      stateClone.history.currentRoundGames.push({
+        moves,
+        status,
+      });
+    }
+
+    stateClone.currentGameMoves = [];
+    this.#saveState(stateClone);
   }
   #getState() {
     return this.#state;

@@ -152,6 +152,12 @@ function init() {
     view.clearMoves();
 
     view.setTurnIndicator(model.game.currentPlayer);
+
+    view.updateScoreBoard(
+      model.stats.playerWithStats[0].wins,
+      model.stats.playerWithStats[1].wins,
+      model.stats.ties
+    );
   });
 
   view.bindNewRoundEvent((event) => {
