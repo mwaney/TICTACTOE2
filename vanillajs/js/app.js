@@ -21,7 +21,13 @@ function init() {
     view.initializeMoves(model.game.moves);
   }
 
+  window.addEventListener("storage", () => {
+    console.log("State changed from another tab");
+    initView();
+  });
+
   initView();
+
   view.bindGameResetEvent((event) => {
     model.reset();
     initView();
