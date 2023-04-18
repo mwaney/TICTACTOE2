@@ -18,10 +18,10 @@ function init() {
       model.stats.playerWithStats[1].wins,
       model.stats.ties
     );
+    view.initializeMoves(model.game.moves);
   }
 
   initView();
-
   view.bindGameResetEvent((event) => {
     model.reset();
     initView();
